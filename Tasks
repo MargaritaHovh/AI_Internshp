@@ -1,0 +1,135 @@
+1.
+
+from abc import ABC, abstractmethod
+class DataStorageSystem(ABC):
+
+    @abstractmethod
+    def save(self):
+        pass
+
+    @abstractmethod
+    def load(self):
+        pass
+
+    @abstractmethod
+    def delete(self):
+        pass
+
+
+class FileStorage(DataStorageSystem):
+
+    def save(self):
+        print("Saving data to file")
+
+    def load(self):
+        print("Loading data from file")
+
+    def delete(self):
+        print("Deleting data from file")
+
+
+class DatabaseStorage(DataStorageSystem):
+
+    def save(self):
+        print("Saving data to database")
+
+    def load(self):
+        print("Loading data from database")
+
+    def delete(self):
+        print("Deleting data from database")
+
+
+        
+file_system = FileStorage()
+file_system.save()
+
+2.
+
+class MetaClass(type):
+    def __new__(cls, name, bases, attrs):
+        new_attrs = {}
+        for attr, value in attrs.items():
+            if attr.startswith("__"):
+                new_attrs[attr] = value
+            else:
+                new_attrs[attr] = cls.type_negative_checking(attr, value)
+        
+        return super().__new__(cls, name, bases, new_attrs)
+    
+    @staticmethod
+    def type_negative_checking(attr, value):
+        def type_negative_checking_setter(instance, val):
+            if isinstance(val, value) and val >=0:
+                instance.__dict__[attr] = val
+
+            else:
+                raise ValueError("Invalid value")
+
+        return property(fset = type_negative_checking_setter)
+
+class MyClass(metaclass = MetaClass):
+    age = int
+
+
+
+obj = MyClass()
+obj.age = -8
+
+3.
+class Vehicle:
+    def __init__(self, model, year):
+        self.model = model
+        self.year = year
+
+    def start(self, vehicle):
+        print(f"The {vehicle.model} is starting")
+
+    def vehicle_type(self):
+        print("Vehicle")
+
+
+
+class Car(Vehicle):
+    def __init__(self, model, year, doors_number):
+        super().__init__(model,year)
+        self.doors_number = doors_number
+
+
+    def start(self, vehicle):
+        print(f"The {vehicle.model} car is starting")
+
+    def vehicle_type(self):
+        print("Car")
+
+class Motorcycle(Vehicle):
+    def __init__(self, model, year):
+        super().__init__(model,year)
+
+
+    def start(self, vehicle):
+        print(f"The {vehicle.model} motorcycle is starting")    
+
+    def vehicle_type(self):
+        print("Motorcycle")
+
+
+class Bicycle(Vehicle):
+
+    def __init__(self, model, year):
+        super().__init__(model,year)
+
+
+    def start(self, vehicle):
+        print(f"The {vehicle.model} bicycle is starting")
+
+    def vehicle_type(self):
+        print("Bicycle")
+
+
+car = Car("Car1", 2022, 4)
+car.start(car)
+
+bicycle = Bicycle("Bicycle1", 2023)
+bicycle.start(bicycle)
+bicycle.vehicle_type()

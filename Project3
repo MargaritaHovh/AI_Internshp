@@ -1,0 +1,80 @@
+class Int:
+    def __init__(self, min_value = None, max_value = None):
+        self.min_value = min_value
+        self.max_value = max_value
+
+    def __set_name__(self, owner, name):
+        self.name = name
+
+    def __set__(self, instance, value):
+        if not isinstance(value, int):
+            raise ValueError(f"Expected {self.name} to be an integer")
+        if self.min_value is not None and value < self.min_value:
+            raise ValueError(f"Expected {self.name} to be greater than or equal to {self.min_value}")
+        if self.max_value is not None and value > self.max_value:
+            raise ValueError(f"Expected {self.name} to be less than or equal to {self.max_value}")
+        instance.__dict__[self.name] = value
+
+    def __get__(self, instance , owner):
+        if instance is None:
+            return self
+        return instance.__dict__.get(self.name, None)
+    
+
+class Point2D:
+    def __init__(self):
+        self.x = Int(min_value = 0)
+        self.y = Int(min_value = 0)
+
+
+class Point2DSequence:
+    def __init__(self, min_length=None, max_length=None):
+        self.min_length = min_length
+        self.max_length = max_length
+
+    def __set_name__(self, owner, name):
+        self.name = name
+
+    def __set__(self, instance, value):
+        if not isinstance(value, (list, tuple)):
+            raise ValueError(f"{self.name} should be a list or tuple.")
+        for point in value:
+            if not isinstance(point, Point2D):
+                raise ValueError(f"Each element in {self.name} should be an instance of Point2D.")
+        if self.min_length is not None and len(value) < self.min_length:
+            raise ValueError(f"{self.name} should have at least {self.min_length} vertices.")
+        if self.max_length is not None and len(value) > self.max_length:
+            raise ValueError(f"{self.name} should have at most {self.max_length} vertices.")
+        instance.__dict__[self.name] = value
+
+    def __get__(self, instance, owner):
+        if instance is None:
+            return self
+        return instance.__dict__.get(self.name, None)
+    
+
+class Polygon:
+    def __init__(self, *vertices):
+        self.vertices = Point2DSequence(min_length=3, max_length=10)
+        self.vertices_list = []
+        self.append(*vertices)
+
+    def append(self, *vertices):
+        current_vertices = self.vertices_list.copy()
+        for v in vertices:
+            current_vertices.append(v)
+        self.vertices_list = current_vertices
+        self.vertices = current_vertices
+
+point1 = Point2D()
+point1.x = 4
+point1.y = 8
+
+point2 = Point2D()
+point2.x = 1
+point2.y = 2
+
+polygon = Polygon(point1, point2)
+polygon.append(Point2D())
+
+

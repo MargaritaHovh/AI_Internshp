@@ -1,0 +1,105 @@
+class SlottedStruct(type):
+    def __init__(cls, name, bases, dct):
+        super().__init__(name, bases, dct)
+        cls._num_dimensions = len(cls.__slots__)
+
+    def __repr__(cls):
+        return f"{cls.__name__}({', '.join(str(getattr(cls, slot)) for slot in cls.__slots__)})"
+
+    def __eq__(cls, other):
+        return isinstance(other, cls) and all(getattr(cls, slot) == getattr(other, slot) for slot in cls.__slots__)
+
+    def __hash__(cls):
+        return hash(tuple(getattr(cls, slot) for slot in cls.__slots__))
+
+    def __str__(cls):
+        return f"({', '.join(str(getattr(cls, slot)) for slot in cls.__slots__)})"
+
+
+class Point2D(metaclass=SlottedStruct):
+    __slots__ = ('_x', '_y')
+
+    def __init__(self, x, y):
+        self._x = x
+        self._y = y
+
+    @property
+    def x(self):
+        return self._x
+
+    @property
+    def y(self):
+        return self._y
+
+
+class Point3D(metaclass=SlottedStruct):
+    __slots__ = ('_x', '_y', '_z')
+
+    def __init__(self, x, y, z):
+        self._x = x
+        self._y = y
+        self._z = z
+
+    @property
+    def x(self):
+        return self._x
+
+    @property
+    def y(self):
+        return self._y
+
+    @property
+    def z(self):
+        return self._z
+
+
+class Point4D(metaclass=SlottedStruct):
+    __slots__ = ('_x', '_y', '_z', '_w')
+
+    def __init__(self, x, y, z, w):
+        self._x = x
+        self._y = y
+        self._z = z
+        self._w = w
+
+    @property
+    def x(self):
+        return self._x
+
+    @property
+    def y(self):
+        return self._y
+
+    @property
+    def z(self):
+        return self._z
+
+    @property
+    def w(self):
+        return self._w
+
+
+if __name__ == "__main__":
+    p2d_1 = Point2D(1, 2)
+    p2d_2 = Point2D(1, 2)
+    p2d_3 = Point2D(3, 4)
+
+    print(p2d_1) 
+    print(p2d_1 == p2d_2) 
+    print(p2d_1 == p2d_3) 
+
+    p3d_1 = Point3D(1, 2, 3)
+    p3d_2 = Point3D(1, 2, 3)
+    p3d_3 = Point3D(4, 5, 6)
+
+    print(p3d_1) 
+    print(p3d_1 == p3d_2)  
+    print(p3d_1 == p3d_3) 
+
+    p4d_1 = Point4D(1, 2, 3, 4)
+    p4d_2 = Point4D(1, 2, 3, 4)
+    p4d_3 = Point4D(5, 6, 7, 8)
+
+    print(p4d_1) 
+    print(p4d_1 == p4d_2) 
+    print(p4d_1 == p4d_3)  
